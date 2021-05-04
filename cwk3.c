@@ -61,7 +61,7 @@ int main( int argc, char **argv )
     displayMatrix( hostMatrix, nRows, nCols );
 
     cl_mem device_matrix = clCreateBuffer( context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, nRows*nCols*sizeof(float),hostMatrix, &status );
-    cl_mem device_transposedMatrix = clCreateBuffer( context, CL_MEM_WRITE_ONLY , )
+    cl_mem device_transposedMatrix = clCreateBuffer( context, CL_MEM_WRITE_ONLY ,  nRows*nCols*sizeof(float), NULL, &status);
     //
     // Transpose the matrix on the GPU.
     //
@@ -83,7 +83,12 @@ int main( int argc, char **argv )
 
 
 
-    status = clEnqueueReadBuffer(queue, )
+    status = clEnqueueReadBuffer(queue, device_transposedMatrix, CL_TRUE, 0, nCols*nRows*sizeof(float), transposedMatrix, 0, NULL, NULL);
+    if( status != CL_SUCCESS )
+	{
+		printf( "Could not copy device data to host: Error %d.\n", status );
+		return EXIT_FAILURE;
+	}
     //
     // Display the final result. This assumes that the transposed matrix was copied back to the hostMatrix array
     // (note the arrays are the same total size before and after transposing - nRows * nCols - so there is no risk
