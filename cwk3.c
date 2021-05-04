@@ -51,22 +51,39 @@ int main( int argc, char **argv )
     cl_command_queue queue = clCreateCommandQueue( context, device, 0, &status );
 
     // Allocate memory for the matrix.
-    float *hostMatrix = (float*) malloc( nRows*nCols*sizeof(float) );
-
+    float 
+        *hostMatrix = (float*) malloc( nRows*nCols*sizeof(float) ),
+        *transposedMatrix = (float*) malloc( nRows*nCols*sizeof(float) );
+    
     // Fill the matrix with random values, and display.
     fillMatrix( hostMatrix, nRows, nCols );
     printf( "Original matrix (only top-left shown if too large):\n" );
     displayMatrix( hostMatrix, nRows, nCols );
 
-
+    cl_mem device_matrix = clCreateBuffer( context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, nRows*nCols*sizeof(float),hostMatrix, &status );
+    cl_mem device_transposedMatrix = clCreateBuffer( context, CL_MEM_WRITE_ONLY , )
     //
     // Transpose the matrix on the GPU.
     //
 
+    cl_kernel kernel = compileKernelFromFile("cwk3.cl", "matrixTranspose", context, device);
 
-    // ...
+
+    status = clSetKernelArg( kernel, 0, sizeof(cl_mem), &device_matrix);
+    
+    size_t indexSpaceSize[1], workGroupSize[1];
+	indexSpaceSize[0] = nCols*nRows;
+	workGroupSize [0] = 128;	
+
+    status = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, indexSpaceSize, workGroupSize, 0, NULL, NULL);
+    if (status != CL_SUCCESS){
+        printf("Kernel enqueuing failed: ERROR %d.\n", status );
+        return EXIT_FAILURE;
+    }
 
 
+
+    status = clEnqueueReadBuffer(queue, )
     //
     // Display the final result. This assumes that the transposed matrix was copied back to the hostMatrix array
     // (note the arrays are the same total size before and after transposing - nRows * nCols - so there is no risk
