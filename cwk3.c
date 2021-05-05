@@ -70,7 +70,7 @@ int main( int argc, char **argv )
     // Transpose the matrix on the GPU.
     //
 
-    //Building Kernel code.
+    //Building kernel code.
     cl_kernel kernel = compileKernelFromFile("cwk3.cl", "matrixTranspose", context, device);
 
     //Setting kernel arguments.
