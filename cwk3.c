@@ -61,8 +61,8 @@ int main( int argc, char **argv )
     displayMatrix( hostMatrix, nRows, nCols );
 
     cl_mem device_matrix = clCreateBuffer( context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, nRows*nCols*sizeof(float),hostMatrix, &status );
-    cl_int device_nRows = clCreateBuffer (context, CL_MEM_READ_ONLY, sizeof(int), nRows, &status);
-    cl_int device_nCols = clCreateBuffer (context, CL_MEM_READ_ONLY, sizeof(int), nCols, &status);
+    cl_int device_nRows = clCreateBuffer (context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(int), nRows, &status);
+    cl_int device_nCols = clCreateBuffer (context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(int), nCols, &status);
     cl_mem device_transposedMatrix = clCreateBuffer( context, CL_MEM_WRITE_ONLY ,  nRows*nCols*sizeof(float), NULL, &status);
     //
     // Transpose the matrix on the GPU.
