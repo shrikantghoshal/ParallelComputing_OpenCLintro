@@ -81,8 +81,8 @@ int main( int argc, char **argv )
     
     //Setting up global problem size and work group size.
     size_t	indexSpaceSize[1], workGroupSize[1];
-    indexSpaceSize[0] = nCols;
-	workGroupSize [0] = nRows;	
+    indexSpaceSize[0] = nCols+nRows;
+	workGroupSize [0] = 2;
 
     //Put the kernel onto command queue.
     status = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, indexSpaceSize, workGroupSize, 0, NULL, NULL);
