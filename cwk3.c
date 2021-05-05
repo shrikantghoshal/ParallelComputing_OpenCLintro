@@ -78,8 +78,9 @@ int main( int argc, char **argv )
     status = clSetKernelArg( kernel, 2, sizeof(cl_int), &device_nCols); 
     status = clSetKernelArg( kernel, 3, sizeof(cl_mem), &device_transposedMatrix);
     
-    size_t	indexSpaceSize[0] = nCols*nRows;
-	size_t workGroupSize [0] = nRows;	
+    size_t	indexSpaceSize[1], workGroupSize[1];
+    indexSpaceSize[0] = nCols*nRows;
+	workGroupSize [0] = nRows;	
 
     status = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, indexSpaceSize, workGroupSize, 0, NULL, NULL);
     if (status != CL_SUCCESS){
