@@ -61,8 +61,8 @@ int main( int argc, char **argv )
     displayMatrix( hostMatrix, nRows, nCols );
 
     cl_mem device_matrix = clCreateBuffer( context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, nRows*nCols*sizeof(float),hostMatrix, &status );
-    cl_mem device_nRows = clCreateBuffer (context, CL_MEM_READ_ONLY, sizeof(int), nRows, &status);
-    cl_mem device_nCols = clCreateBuffer (context, CL_MEM_READ_ONLY, sizeof(int), nCols, &status);
+    cl_int device_nRows = clCreateBuffer (context, CL_MEM_READ_ONLY, sizeof(int), nRows, &status);
+    cl_int device_nCols = clCreateBuffer (context, CL_MEM_READ_ONLY, sizeof(int), nCols, &status);
     cl_mem device_transposedMatrix = clCreateBuffer( context, CL_MEM_WRITE_ONLY ,  nRows*nCols*sizeof(float), NULL, &status);
     //
     // Transpose the matrix on the GPU.
@@ -72,8 +72,8 @@ int main( int argc, char **argv )
 
 
     status = clSetKernelArg( kernel, 0, sizeof(cl_mem), &device_matrix); 
-    status = clSetKernelArg( kernel, 1, sizeof(int), &device_nRows); 
-    status = clSetKernelArg( kernel, 2, sizeof(int), &device_nCols); 
+    status = clSetKernelArg( kernel, 1, sizeof(cl_int), &device_nRows); 
+    status = clSetKernelArg( kernel, 2, sizeof(cl_int), &device_nCols); 
     status = clSetKernelArg( kernel, 3, sizeof(cl_mem), &device_transposedMatrix);
     
     size_t indexSpaceSize[1], workGroupSize[1];
