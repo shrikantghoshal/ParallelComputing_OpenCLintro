@@ -114,8 +114,8 @@ int main( int argc, char **argv )
     clReleaseContext     ( context );
     clReleaseMemObject( device_matrix);
     clReleaseMemObject( device_transposedMatrix);
-    clReleaseMemObject( device_nCols);
-    clReleaseMemObject( device_nCols);
+    // clReleaseMemObject( device_nCols);
+    // clReleaseMemObject( device_nCols);
 
 
     free( hostMatrix );
