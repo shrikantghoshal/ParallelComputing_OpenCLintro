@@ -60,28 +60,31 @@ int main( int argc, char **argv )
     printf( "Original matrix (only top-left shown if too large):\n" );
     displayMatrix( hostMatrix, nRows, nCols );
 
+    //Creating corresponding matrices and variables to pass to the device.
     cl_mem device_matrix = clCreateBuffer( context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, nRows*nCols*sizeof(float),hostMatrix, &status );
-    // cl_int device_nRows = clCreateBuffer (context, CL_MEM_READ_ONLY, sizeof(int), &nRows, &status);
-    // cl_int device_nCols = clCreateBuffer (context, CL_MEM_READ_ONLY, sizeof(int), &nCols, &status);
     cl_int device_nRows = nRows;
     cl_int device_nCols = nCols;
     cl_mem device_transposedMatrix = clCreateBuffer( context, CL_MEM_WRITE_ONLY ,  nRows*nCols*sizeof(float), NULL, &status);
+    
     //
     // Transpose the matrix on the GPU.
     //
 
+    //Building Kernel code.
     cl_kernel kernel = compileKernelFromFile("cwk3.cl", "matrixTranspose", context, device);
 
-
+    //Setting kernel arguments.
     status = clSetKernelArg( kernel, 0, sizeof(cl_mem), &device_matrix); 
     status = clSetKernelArg( kernel, 1, sizeof(cl_int), &device_nRows); 
     status = clSetKernelArg( kernel, 2, sizeof(cl_int), &device_nCols); 
     status = clSetKernelArg( kernel, 3, sizeof(cl_mem), &device_transposedMatrix);
     
+    //Setting up global problem size and work group size.
     size_t	indexSpaceSize[1], workGroupSize[1];
     indexSpaceSize[0] = nCols*nRows;
 	workGroupSize [0] = nRows;	
 
+    //Put the kernel onto command queue.
     status = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, indexSpaceSize, workGroupSize, 0, NULL, NULL);
     if (status != CL_SUCCESS){
         printf("Kernel enqueuing failed: ERROR %d.\n", status );
@@ -89,20 +92,17 @@ int main( int argc, char **argv )
     }
 
 
-
+    //Retrieve the result from device to host + error handling.
     status = clEnqueueReadBuffer(queue, device_transposedMatrix, CL_TRUE, 0, nCols*nRows*sizeof(float), transposedMatrix, 0, NULL, NULL);
     if( status != CL_SUCCESS )
 	{
 		printf( "Could not copy device data to host: Error %d.\n", status );
 		return EXIT_FAILURE;
 	}
-    //
-    // Display the final result. This assumes that the transposed matrix was copied back to the hostMatrix array
-    // (note the arrays are the same total size before and after transposing - nRows * nCols - so there is no risk
-    // of accessing unallocated memory).
-    //
+
+    //Display the final result. The initial statement has been altered to output the matrix containing the transposed
+    //version of hostMatrix - transposedMatrix; any extra allocated memory has been freed.
     printf( "Transposed matrix (only top-left shown if too large):\n" );
-    // displayMatrix( hostMatrix, nCols, nRows );
     displayMatrix( transposedMatrix, nCols, nRows);
 
 
@@ -114,11 +114,8 @@ int main( int argc, char **argv )
     clReleaseContext     ( context );
     clReleaseMemObject( device_matrix);
     clReleaseMemObject( device_transposedMatrix);
-    // clReleaseMemObject( device_nCols);
-    // clReleaseMemObject( device_nCols);
 
-
-    free( hostMatrix );
+    free(hostMatrix);
     free(transposedMatrix);
     return EXIT_SUCCESS;
 }
