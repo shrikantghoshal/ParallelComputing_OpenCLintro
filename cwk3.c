@@ -61,6 +61,8 @@ int main( int argc, char **argv )
     displayMatrix( hostMatrix, nRows, nCols );
 
     cl_mem device_matrix = clCreateBuffer( context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, nRows*nCols*sizeof(float),hostMatrix, &status );
+    cl_mem device_nRows = clCreateBuffer (context, CL_MEM_READ_ONLY, sizeof(int), nRows, &status);
+    cl_mem device_nCols = clCreateBuffer (context, CL_MEM_READ_ONLY, sizeof(int), nCols, &status);
     cl_mem device_transposedMatrix = clCreateBuffer( context, CL_MEM_WRITE_ONLY ,  nRows*nCols*sizeof(float), NULL, &status);
     //
     // Transpose the matrix on the GPU.
@@ -69,7 +71,8 @@ int main( int argc, char **argv )
     cl_kernel kernel = compileKernelFromFile("cwk3.cl", "matrixTranspose", context, device);
 
 
-    status = clSetKernelArg( kernel, 0, sizeof(cl_mem), &device_matrix);
+    status = clSetKernelArg( kernel, 0, sizeof(cl_mem), &device_matrix); 
+    status = clSetKernelArg( kernel, 1, sizeof(cl_mem), &device_transposedMatrix);
     
     size_t indexSpaceSize[1], workGroupSize[1];
 	indexSpaceSize[0] = nCols*nRows;
@@ -95,17 +98,22 @@ int main( int argc, char **argv )
     // of accessing unallocated memory).
     //
     printf( "Transposed matrix (only top-left shown if too large):\n" );
-    displayMatrix( hostMatrix, nCols, nRows );
+    // displayMatrix( hostMatrix, nCols, nRows );
+    displayMatrix( transposedMatrix, nCols, nRows);
 
 
     //
     // Release all resources.
     //
+    clReleaseKernel(kernel);
     clReleaseCommandQueue( queue   );
     clReleaseContext     ( context );
+    clReleaseMemObject( device_matrix);
+    clReleaseMemObject( device_transposedMatrix);
+
 
     free( hostMatrix );
-
+    free(transposedMatrix);
     return EXIT_SUCCESS;
 }
 

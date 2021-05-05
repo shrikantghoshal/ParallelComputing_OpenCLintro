@@ -1,17 +1,15 @@
 // Kernel for matrix transposition.
 __kernel
-void doSomethingComplex( __global float *array, int L )
+void matrixTranspose( __global float *inputMatrix, __global int nRows, __global int nCols, __global float *outputMatrix)
 {
 	int
 		i = get_global_id(0),
-		j = get_global_id(1),
-		k;
-	
-	// Create a table of sine values in private memory.
-	float temp[N];
-	for( k=0; k<N; k++ ) temp[k] = sin(0.1f*k);
-	
-	// Assign array value to somewhere in this table that depends on the work item id
-	// (note this means that the compiler cannot 'short cut' these calculations).
-	array[i*L+j] = temp[ (i*L+j)%N ];
+        j = get_global_id(1);
+
+    for(i=0; i<nRows; i++){
+        for(j=0; j<nCols; j++){
+            outputMatrix[j*nRows+i] = inputMatrix[i*nRows+j];
+        }
+    }    
+
 }
