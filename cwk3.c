@@ -72,7 +72,9 @@ int main( int argc, char **argv )
 
 
     status = clSetKernelArg( kernel, 0, sizeof(cl_mem), &device_matrix); 
-    status = clSetKernelArg( kernel, 1, sizeof(cl_mem), &device_transposedMatrix);
+    status = clSetKernelArg( kernel, 1, sizeof(int), &device_nRows); 
+    status = clSetKernelArg( kernel, 2, sizeof(int), &device_nCols); 
+    status = clSetKernelArg( kernel, 3, sizeof(cl_mem), &device_transposedMatrix);
     
     size_t indexSpaceSize[1], workGroupSize[1];
 	indexSpaceSize[0] = nCols*nRows;
