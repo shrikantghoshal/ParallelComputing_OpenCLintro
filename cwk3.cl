@@ -9,7 +9,7 @@ void matrixTranspose( __global float *inputMatrix, __private int nRows, __privat
     //Loop through all contents of the inputMatrix and transpose onto outputMatrix.
     for(i=0; i<nRows; i++){
         for(j=0; j<nCols; j++){
-            outputMatrix[j*nRows+i] = inputMatrix[i*nRows+j];
+            outputMatrix[j*nRows+i] = inputMatrix[i*nCols+j];
         }
     }    
 }
