@@ -63,8 +63,8 @@ int main( int argc, char **argv )
     cl_mem device_matrix = clCreateBuffer( context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, nRows*nCols*sizeof(float),hostMatrix, &status );
     
     
-    cl_int device_nRows = clCreateBuffer (context, CL_MEM_READ_ONLY, sizeof(int), &nRows, &status);
-    cl_int device_nCols = clCreateBuffer (context, CL_MEM_READ_ONLY, sizeof(int), &nCols, &status);
+    cl_int device_nRows = clCreateBuffer (context, CL_MEM_READ_ONLY, sizeof(int), nRows, &status);
+    cl_int device_nCols = clCreateBuffer (context, CL_MEM_READ_ONLY, sizeof(int), nCols, &status);
     cl_mem device_transposedMatrix = clCreateBuffer( context, CL_MEM_WRITE_ONLY ,  nRows*nCols*sizeof(float), NULL, &status);
     //
     // Transpose the matrix on the GPU.
@@ -80,7 +80,7 @@ int main( int argc, char **argv )
     
     size_t indexSpaceSize[1], workGroupSize[1];
 	indexSpaceSize[0] = nCols*nRows;
-	workGroupSize [0] = 128;	
+	workGroupSize [0] = nCols*nRows*2;	
 
     status = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, indexSpaceSize, workGroupSize, 0, NULL, NULL);
     if (status != CL_SUCCESS){
